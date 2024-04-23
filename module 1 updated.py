@@ -50,7 +50,7 @@ def seller_menu():
             print("\nWould you like to sort the products? (y/n)")
             while True:
                 sort_choice = input().lower()
-                sort_by = 'id'  # default sort by name
+                sort_by = 'id'
                 if sort_choice == 'y':
                     while True:
                         print("Sort by: 1. Name 2. Price")
@@ -94,7 +94,7 @@ def buyer_menu():
             print("\nWould you like to sort the products? (y/n)")
             while True:
                 sort_choice = input().lower()
-                sort_by = 'id'  # default sort by name
+                sort_by = 'id'
                 if sort_choice == 'y':
                     while True:
                         print("Sort by: 1. Name 2. Price")
@@ -203,97 +203,112 @@ def show_products(sort_by='id'):
     # Sorting the products based on the chosen key
     sorted_products = sorted(products.items(), key=sort_key)
 
-    # Preparing data for tabulation
     product_list = [[pid, details['name'], details['category'], details['price'], details['quantity']] for pid, details in sorted_products]
     print(tabulate(product_list, headers=['ID', 'Name', 'Category', 'Price', 'Quantity'], tablefmt='grid'))
 
 # Edit Product in seller menu
 def edit_product():
     show_products()
-    product_id = input("Enter product ID to edit: ").strip()
-    if product_id in products:
-        # Validate Product Name
-        while True:
-            new_name = input("Enter new product name: ").strip()
-            if new_name:
-                break
-            else:
-                print("Product name cannot be empty.")
+    while True:
+        product_id = input("Enter product ID to edit: ").strip()
+        if product_id in products:
+            # Validate Product Name
+            while True:
+                new_name = input("Enter new product name: ").strip()
+                if new_name:
+                    break
+                else:
+                    print("Product name cannot be empty.")
 
-        # Validate Product Category
-        while True:
-            new_category = input("Enter new product category: ").strip()
-            if new_category:
-                break
-            else:
-                print("Product category cannot be empty.")
+            # Validate Product Category
+            while True:
+                new_category = input("Enter new product category: ").strip()
+                if new_category:
+                    break
+                else:
+                    print("Product category cannot be empty.")
 
-        # Validate Product Price
-        while True:
-            new_price = input("Enter new product price: ").strip()
-            if new_price.replace('.', '', 1).isdigit() and float(new_price) > 0:
-                new_price = float(new_price)
-                break
-            else:
-                print("Invalid price. Please enter a positive number.")
+            # Validate Product Price
+            while True:
+                new_price = input("Enter new product price: ").strip()
+                if new_price.replace('.', '', 1).isdigit() and float(new_price) > 0:
+                    new_price = float(new_price)
+                    break
+                else:
+                    print("Invalid price. Please enter a positive number.")
 
-        # Validate Product Quantity
-        while True:
-            new_quantity = input("Enter new quantity: ").strip()
-            if new_quantity.isdigit() and int(new_quantity) > 0:
-                new_quantity = int(new_quantity)
-                break
-            else:
-                print("Invalid quantity. Please enter a positive integer.")
+            # Validate Product Quantity
+            while True:
+                new_quantity = input("Enter new quantity: ").strip()
+                if new_quantity.isdigit() and int(new_quantity) > 0:
+                    new_quantity = int(new_quantity)
+                    break
+                else:
+                    print("Invalid quantity. Please enter a positive integer.")
 
-        # Update product details
-        products[product_id] = {
-            "name": new_name,
-            "category": new_category,
-            "price": new_price,
-            "quantity": new_quantity
-        }
-        print("Product updated successfully.")
-    else:
-        print("Product not found.")
+            # Update product details
+            products[product_id] = {
+                "name": new_name,
+                "category": new_category,
+                "price": new_price,
+                "quantity": new_quantity
+            }
+            print("Product updated successfully.")
+            break
+        else:
+            print("Product not found.")
 
 
 
 # Delete Product in seller menu
 def delete_product():
-    product_id = input("Enter product ID to delete: ")
-    if product_id in products:
-        del products[product_id]
-        print("Product deleted successfully.")
-    else:
-        print("Product not found.")
+    show_products()
+    while True:
+        product_id = input("Enter product ID to delete: ")
+        if product_id in products:
+            del products[product_id]
+            print("Product deleted successfully.")
+            break
+        else:
+            print("Product not found.")
 
 # Add to cart in buyer menu
 def add_to_cart():
-    product_id = input("Enter product ID to add to cart: ")
-    if product_id in products:
-        quantity_to_add = int(input("Enter quantity to add: "))
-        if quantity_to_add <= products[product_id]['quantity']:
-            # Check if the product is already in the cart
-            found_in_cart = False
-            for item in cart:
-                if item['id'] == product_id:
-                    item['quantity'] += quantity_to_add
-                    found_in_cart = True
-                    break
-            if not found_in_cart:
-                # If not found, add a new entry to the cart
-                cart.append({
-                    'id': product_id,
-                    'name': products[product_id]['name'],
-                    'price': products[product_id]['price'],
-                    'quantity': quantity_to_add
-                })
-            print("Product added to cart.")
+    show_products()
+    while True:
+        product_id = input("Enter product ID to add to cart: ").strip()
+        if product_id in products:
+            while True:
+                quantity_to_add = input("Enter quantity to add: ").strip()
+                if quantity_to_add.isdigit() and int(quantity_to_add) > 0:
+                    quantity_to_add = int(quantity_to_add)
+                    if quantity_to_add <= products[product_id]['quantity']:
+                        # Check if the product is already in the cart
+                        found_in_cart = False
+                        for item in cart:
+                            if item['id'] == product_id:
+                                item['quantity'] += quantity_to_add
+                                products[product_id]['quantity'] -= quantity_to_add  
+                                found_in_cart = True
+                                break
+                        if not found_in_cart:
+                            cart.append({
+                                'id': product_id,
+                                'name': products[product_id]['name'],
+                                'price': products[product_id]['price'],
+                                'quantity': quantity_to_add
+                            })
+                            products[product_id]['quantity'] -= quantity_to_add  
+                        print(f"Added {quantity_to_add} units of {products[product_id]['name']} to your cart.")
+                        break
+                    else:
+                        print("Not enough stock available. Try a smaller quantity.")
+                else:
+                    print("Invalid quantity. Please enter a positive integer.")
+            break
         else:
-            print("Not enough stock available.")
-    else:
-        print("Product not found.")
+            print("Product not found.")
+
 
 # Search products in buyer menu
 def search_products():
@@ -332,7 +347,7 @@ def show_cart():
     total_cart_price = 0
     for item in cart:
         total_price = item['price'] * item['quantity']
-        total_cart_price += total_price  # Accumulate the total price of the cart
+        total_cart_price += total_price  
         cart_items.append([item['name'], item['price'], item['quantity'], total_price])
 
     print(tabulate(cart_items, headers=['Product', 'Unit Price', 'Quantity', 'Total Price'], tablefmt='grid'))
@@ -344,7 +359,7 @@ def checkout():
         print("Your cart is empty.")
         return
     
-    total = sum(item['price'] * item['quantity'] for item in cart)  # Calculate total based on quantity
+    total = sum(item['price'] * item['quantity'] for item in cart)  
     print(f"Total amount to pay: {total:.2f}")
 
     while True:
@@ -358,7 +373,7 @@ def checkout():
                 if cash_provided > total:
                     change = cash_provided - total
                     print(f"Here's your change: {change:.2f}")
-                for item in cart:  # Update the inventory quantity after checkout
+                for item in cart:  
                     products[item['id']]['quantity'] -= item['quantity']
                 cart.clear()
                 print("Checkout successful. Thank you for your purchase!")
