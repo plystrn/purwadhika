@@ -1,6 +1,6 @@
 # Marketplace Application
 
-This repository contains a simple command-line marketplace application that allows users to operate as either a seller or a buyer. Sellers can add, edit, delete, and list products, while buyers can view products, add them to a cart, and make purchases.
+This repository contains a simple command-line CRUD (Create, Read, Update, and Delete) marketplace application that allows users to operate as either a seller or a buyer. Sellers can add, edit, delete, and list products, while buyers can view products, add them to a cart, and make purchases.
 
 ## Features
 
